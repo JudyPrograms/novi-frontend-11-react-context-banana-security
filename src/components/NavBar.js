@@ -22,7 +22,7 @@ function NavBar() {
             </Link>
 
             <div>
-                { !isAuth ?
+                {!isAuth ?
                     <>
                         <button
                             type="button"
