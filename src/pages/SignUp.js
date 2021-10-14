@@ -2,13 +2,30 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 import {useForm} from "react-hook-form";
 import InputField from "../components/InputField";
+import axios from 'axios';
 
 function SignUp() {
 
     const {register, handleSubmit, formState: {errors}} = useForm()
 
-    function handleFormSubmit(data) {
-        console.log(data)
+    async function handleFormSubmit(data) {
+
+        console.log("SignUp form data:", data)
+
+        try {
+            const result = await axios.post("http://localhost:3000/register",
+                {
+                    email: data.email,
+                    password: data.password,
+                    username: data.username,
+                }
+            )
+            console.log("SignUp post result:", result)
+        } catch (e) {
+            console.log(e.response.data)
+            console.error(e)
+        }
+
     }
 
     return (
@@ -20,7 +37,7 @@ function SignUp() {
                 deserunt
                 doloremque ea eveniet facere fuga illum in numquam quia reiciendis rem sequi tenetur veniam?</p>
             <form action="" onSubmit={handleSubmit(handleFormSubmit)}>
-                <InputField register={register} name="e-mail" required={true} errors={errors}>
+                <InputField register={register} name="email" required={true} errors={errors}>
                     <span>E-mail:</span>
                 </InputField>
                 <InputField register={register} name="password" required={true} errors={errors}>

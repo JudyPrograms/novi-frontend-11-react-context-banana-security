@@ -3,17 +3,28 @@ import {Link} from 'react-router-dom';
 import {AuthContext} from "../context/AuthContext";
 import InputField from "../components/InputField";
 import {useForm} from "react-hook-form";
+import axios from "axios";
 
 function SignIn() {
 
-    const {isAuth, loginFunction} = useContext(AuthContext);
+    const {loginFunction} = useContext(AuthContext);
 
     const {register, handleSubmit, formState: {errors}} = useForm()
 
-    function handleFormSubmit(data) {
-        console.log(data)
-        loginFunction(data.email)
-        console.log(isAuth)
+    async function handleFormSubmit(data) {
+
+        console.log("SignIn form data:", data)
+
+        try {
+            const result = await axios.post("http://localhost:3000/login", {
+                email: data.email,
+                password: data.password,
+            })
+            console.log("SignIn post result:", result)
+            loginFunction(result.data.accessToken)
+        } catch (e) {
+            console.error(e)
+        }
     }
 
 

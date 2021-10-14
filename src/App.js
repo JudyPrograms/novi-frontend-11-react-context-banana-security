@@ -1,18 +1,18 @@
-import React, {useContext} from 'react';
+import React from 'react';
 import './App.css';
-import {Switch, Route, Redirect} from 'react-router-dom';
+import {Switch, Route} from 'react-router-dom';
 import NavBar from './components/NavBar';
 import Profile from './pages/Profile';
 import Home from './pages/Home';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
-import {AuthContext} from "./context/AuthContext";
+// import {AuthContext} from "./context/AuthContext";
 import PrivateRoute from "./components/PrivateRoute";
-import jwt_decode from 'jwt-decode';
+
 
 function App() {
 
-    const {isAuth} = useContext(AuthContext);
+    // const {isAuth} = useContext(AuthContext);
 
     return (
         <>
