@@ -8,7 +8,7 @@ function NavBar() {
 
     const history = useHistory();
 
-    const {isAuth, logoutFunction} = useContext(AuthContext);
+    const {isAuth, user, logoutFunction} = useContext(AuthContext);
 
     return (
         <nav>
@@ -37,12 +37,16 @@ function NavBar() {
                             Registreren
                         </button>
                     </> :
-                    <button
-                        type="button"
-                        onClick={logoutFunction}
-                    >
-                        Log Out
-                    </button>}
+                    <>
+                        <span>{user}</span>
+                        <button
+                            type="button"
+                            onClick={logoutFunction}
+                        >
+                            Log Out
+                        </button>
+                    </>
+                }
             </div>
         </nav>
     );

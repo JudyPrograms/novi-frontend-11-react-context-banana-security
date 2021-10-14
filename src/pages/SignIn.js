@@ -6,13 +6,14 @@ import {useForm} from "react-hook-form";
 
 function SignIn() {
 
-    const {loginFunction} = useContext(AuthContext);
+    const {isAuth, loginFunction} = useContext(AuthContext);
 
     const {register, handleSubmit, formState: {errors}} = useForm()
 
     function handleFormSubmit(data) {
         console.log(data)
-        loginFunction()
+        loginFunction(data.email)
+        console.log(isAuth)
     }
 
 
@@ -23,7 +24,7 @@ function SignIn() {
                 molestias qui quo unde?</p>
 
             <form action="" onSubmit={handleSubmit(handleFormSubmit)}>
-                <InputField register={register} name="e-mail" required={true} errors={errors}>
+                <InputField register={register} name="email" required={true} errors={errors}>
                     <span>E-mail:</span>
                 </InputField>
                 <InputField register={register} name="password" required={true} errors={errors}>

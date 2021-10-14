@@ -8,9 +8,7 @@ function PrivateRoute({children, ...rest}) {
 
     return (
         <Route {...rest}>
-            {/*Ik krijg deze helaas nog niet aan de praat omdat ik volgens de foutmelding geen {children} mag
-            plaatsen op deze manier. Ik snap dit niet, jij?*/}
-            {isAuth ? {children} : <Redirect to='/'/>}
+            {isAuth.isAuth ? children : <Redirect to='/'/>}
         </Route>
     );
 }
