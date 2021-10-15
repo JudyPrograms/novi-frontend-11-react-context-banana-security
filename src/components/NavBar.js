@@ -38,7 +38,7 @@ function NavBar() {
                         </button>
                     </> :
                     <>
-                        <span>{user.username}</span>
+                        <span className="username">User: {user.username}</span>
                         <button
                             type="button"
                             onClick={logoutFunction}

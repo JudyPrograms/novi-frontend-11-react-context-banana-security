@@ -121,3 +121,8 @@ section  {
     transform: rotate(360deg);
   }
 }
+
+.username {
+  margin-right: 10px;
+  font-weight: bold;
+}

@@ -13,12 +13,10 @@ function AuthContextProvider({children}) {
     // Context initialiseren:
     const [isAuth, toggleIsAuth] = useState({
         isAuth: false,
-        user: {},
         status: 'pending',
+        user: null,
     });
-
-    // WERKT NIET !!!!!!!!!!! WERKT NIET  WERKT NIET  WERKT NIET  WERKT NIET  WERKT NIET  WERKT NIET  WERKT NIET
-    const [userData, setUserData] = useState({})
+    console.log("1e log context provider na initialize, en na useEffect():", isAuth)
 
     const history = useHistory();
 
@@ -30,67 +28,77 @@ function AuthContextProvider({children}) {
         logoutFunction: logout,
     }
 
-    // wat moet gebeuren als er gerefresht wordt en er is al een token of nog niet
+    // na een refresh checken of er een token in de local storage staat > zo ja, dan blijft isAuth true
+    // en de gebruiker blijft ingelogd, op basis daarvan wordt de pagina gerenderd
     useEffect(() => {
 
-        const token = localStorage.getItem('token')
+        const jwToken = localStorage.getItem('token')
 
-        if (token) {
+        if (jwToken) {
 
-            // // gegevens ophalen (zie login functie??????)
-            // async function getUser(token, user) {
-            //     try {
-            //         const result = await axios.get(`http://localhost:3000/600/users/${user}`, {
-            //             headers: {
-            //                 "Content-Type": "application/json",
-            //                 Authorization: `Bearer ${token}`,
-            //             }
-            //         })
-            //         console.log("Function getUser, try is gelukt")
-            //
-            //         console.log("Result from get request:", result)
-            //
-            //         // !!!!!!!!!!!
-            //         // setUserData({
-            //         //     email: result.data.email,
-            //         //     username: result.data.username,
-            //         //     id: result.data.id,
-            //         // })
-            //
-            //     } catch (e) {
-            //         console.error(e.response.data)
-            //     }
-            //
-            toggleIsAuth({
-                ...isAuth,
-                isAuth: true,
-                // !!!!!!!!!!!
-                // user: userData,
-                status: 'done',
-            })
-            // }
+            const decodedToken = jwt_decode(jwToken)
+
+            // gegevens ophalen (zie login async functie, die is precies hetzelfde, waarom dubbel ??????)
+            // ******************************************************
+            async function getUser(token, user) {
+                try {
+                    const result = await axios.get(`http://localhost:3000/600/users/${user}`, {
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`,
+                        }
+                    })
+
+                    toggleIsAuth({
+                        ...isAuth,
+                        isAuth: true,
+                        status: 'done',
+                        user: {
+                            email: result.data.email,
+                            username: result.data.username,
+                            id: result.data.id,
+                        },
+                    })
+
+                    console.log('Gebruiker is ingelogd!')
+                    history.push('/profile')
+
+                } catch (e) {
+                    console.error(e.response.data)
+                }
+            }
+            getUser(jwToken, decodedToken.sub)
+
+            // *****************************************
 
         } else {
 
             toggleIsAuth({
                 ...isAuth,
+                isAuth: false,
                 status: 'done',
+                user: null,
             })
 
         }
 
-        console.log(token)
+        // check of token er echt is
+        console.log(jwToken)
 
     }, [])
 
-    // functie die wordt gebruikt bij het inloggen op SignIn.js
+    // functie die wordt gebruikt bij het clicken op button inloggen op SignIn.js
+    // deze functie wordt async getriggerd door de login button in SignIn.js
+    // jwToken is de result.data.accessToken van de post request
     function login(jwToken) {
 
+        // verkregen access token in de local storage zetten zodat bij refresh gebruiker ingelogd blijft
         localStorage.setItem('token', jwToken)
-
+        // access token decoderen om data uit te kunnen lezen
         const decodedToken = jwt_decode(jwToken)
+        console.log("login functie is aangeroepen, decodedToken:", decodedToken)
 
-        // functie om gebruikersgegevens op te halen:
+        // functie om gebruikersgegevens op te halen
         async function getUser(token, user) {
             try {
                 const result = await axios.get(`http://localhost:3000/600/users/${user}`, {
@@ -99,45 +107,49 @@ function AuthContextProvider({children}) {
                         Authorization: `Bearer ${token}`,
                     }
                 })
-                console.log("Function getUser, try is gelukt")
-
+                console.log("getUser functie is aangeroepen, try is gelukt")
                 console.log("Result from get request:", result)
 
-                // WERKT NIET !!!!!!!!!!! WERKT NIET  WERKT NIET  WERKT NIET  WERKT NIET  WERKT NIET  WERKT NIET  WERKT NIET
-                setUserData({
-                    email: result.data.email,
-                    username: result.data.username,
-                    id: result.data.id,
+                // check of object met gebruikersdata te lezen is:
+                console.log(result.data)
+                // gebruikersdata in de context opslaan:
+                toggleIsAuth({
+                    ...isAuth,
+                    isAuth: true,
+                    status: 'done',
+                    user: {
+                        email: result.data.email,
+                        username: result.data.username,
+                        id: result.data.id,
+                    },
                 })
+                // WAAROM GAAT IE TERUG NAAR REGEL 19 EN DOET IE DE VOLGENDE CODE PAS NA EEN RE-RENDER?:
+                // checken of userdata in context is opgeslagen:
+                console.log("User details after toggleIsAuth:", isAuth.user)
+
+                // als inloggen gelukt is, dan naar profielpagina doorverwijzen:
+                console.log('Gebruiker is ingelogd!')
+                history.push('/profile')
 
             } catch (e) {
                 console.error(e.response.data)
             }
-
-            toggleIsAuth({
-                ...isAuth,
-                isAuth: true,
-                // WERKT NIET !!!!!!!!!!! WERKT NIET  WERKT NIET  WERKT NIET  WERKT NIET  WERKT NIET  WERKT NIET  WERKT NIET
-                user: userData,
-            })
-
-            console.log("Username after toggleIsAuth:", isAuth.user)
-
-            console.log('Gebruiker is ingelogd!')
-            history.push('/profile')
-
         }
 
-        // specifieke gebruikersgegevens ophalen met token en user id
+        // specifieke gebruikersgegevens ophalen met token en user id via de async functie getUser()
         getUser(jwToken, parseInt(decodedToken.sub))
     }
 
     // functie die wordt gebruikt bij het uitloggen
     function logout() {
+
+        localStorage.removeItem('token')
+
         toggleIsAuth({
             ...isAuth,
             isAuth: false,
         })
+
         console.log('Gebruiker is uitgelogd!')
         history.push('/')
     }
