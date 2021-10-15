@@ -8,7 +8,7 @@ function PrivateRoute({children, ...rest}) {
 
     return (
         <Route {...rest}>
-            {isAuth.isAuth ? children : <Redirect to='/'/>}
+            {isAuth ? children : <Redirect to='/'/>}
         </Route>
     );
 }

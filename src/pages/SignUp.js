@@ -1,12 +1,15 @@
 import React from 'react';
-import {Link} from 'react-router-dom';
+import {Link, useHistory} from 'react-router-dom';
 import {useForm} from "react-hook-form";
 import InputField from "../components/InputField";
 import axios from 'axios';
 
+
 function SignUp() {
 
     const {register, handleSubmit, formState: {errors}} = useForm()
+
+    const history = useHistory()
 
     async function handleFormSubmit(data) {
 
@@ -21,6 +24,8 @@ function SignUp() {
                 }
             )
             console.log("SignUp post result:", result)
+
+            history.push("/signin")
         } catch (e) {
             console.log(e.response.data)
             console.error(e)

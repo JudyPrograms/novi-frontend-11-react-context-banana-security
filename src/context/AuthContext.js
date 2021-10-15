@@ -1,9 +1,8 @@
 import React, {useState, createContext, useEffect} from 'react';
-import {useHistory} from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import axios from "axios";
 import jwt_decode from 'jwt-decode';
-// import jwtDecode from "jwt-decode"; HEEFT DIT EEN ANDERE WERKING ????????????????????????????????????????????
-
+// import jwtDecode from "jwt-decode"; HEEFT DIT EEN ANDERE WERKING dan de import op regel 4 ???
 
 export const AuthContext = createContext({});
 
@@ -60,8 +59,7 @@ function AuthContextProvider({children}) {
                         },
                     })
 
-                    console.log('Gebruiker is ingelogd!')
-                    history.push('/profile')
+                    console.log('Gebruiker was nog ingelogd!')
 
                 } catch (e) {
                     console.error(e.response.data)
@@ -111,7 +109,7 @@ function AuthContextProvider({children}) {
                 console.log("Result from get request:", result)
 
                 // check of object met gebruikersdata te lezen is:
-                console.log(result.data)
+                console.log("opgehaalde gebruikersdata:", result.data)
                 // gebruikersdata in de context opslaan:
                 toggleIsAuth({
                     ...isAuth,
@@ -132,12 +130,12 @@ function AuthContextProvider({children}) {
                 history.push('/profile')
 
             } catch (e) {
-                console.error(e.response.data)
+                console.error(e.response)
             }
         }
 
         // specifieke gebruikersgegevens ophalen met token en user id via de async functie getUser()
-        getUser(jwToken, parseInt(decodedToken.sub))
+        getUser(jwToken, decodedToken.sub)
     }
 
     // functie die wordt gebruikt bij het uitloggen
